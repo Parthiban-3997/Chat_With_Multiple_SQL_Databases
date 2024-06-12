@@ -11,7 +11,7 @@ import toml
 
 # Function to update secrets.toml file
 def update_secrets_file(data):
-    secrets_file_path = ".streamlit/secrets.toml"
+    secrets_file_path = ".streamlit/config.toml"
     secrets_data = {}
     if os.path.exists(secrets_file_path):
         with open(secrets_file_path, "r") as file:
@@ -26,7 +26,7 @@ def update_secrets_file(data):
 
 # Initialize database connections
 def init_databases():
-    secrets_file_path = ".streamlit/secrets.toml"
+    secrets_file_path = ".streamlit/config.toml"
     secrets_data = {}
     if os.path.exists(secrets_file_path):
         with open(secrets_file_path, "r") as file:
