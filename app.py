@@ -21,7 +21,7 @@ def update_secrets_file(data):
     
     secrets_data.update(data)
     
-    with open(secrets_file_path, "w") as file:
+    with open(secrets_file_path, "a") as file:
         toml.dump(secrets_data, file)
 
 # Initialize database connections
