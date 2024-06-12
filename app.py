@@ -9,24 +9,27 @@ from langchain_openai import ChatOpenAI
 from langchain_groq import ChatGroq
 import toml
 
-# Function to update secrets.toml file
+# Function to update config.toml file
 def update_secrets_file(data):
-    secrets_file_path = ".streamlit/config.toml"
+    secrets_file_path = ".streamlit/secrets.toml"
     secrets_data = {}
+    
+    # Load existing data from secrets.toml
     if os.path.exists(secrets_file_path):
         with open(secrets_file_path, "r") as file:
-            content = file.read().strip()
-            if content:
-                secrets_data = toml.loads(content)
+            secrets_data = toml.load(file)
     
+    # Update secrets data with new data
     secrets_data.update(data)
     
-    with open(secrets_file_path, "a") as file:
+    # Write updated data back to secrets.toml
+    with open(secrets_file_path, "w+") as file:
         toml.dump(secrets_data, file)
+
 
 # Initialize database connections
 def init_databases():
-    secrets_file_path = ".streamlit/config.toml"
+    secrets_file_path = ".streamlit/secrets.toml"
     secrets_data = {}
     if os.path.exists(secrets_file_path):
         with open(secrets_file_path, "r") as file:
