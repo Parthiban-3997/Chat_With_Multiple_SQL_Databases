@@ -181,6 +181,36 @@ def get_sql_chain(dbs, llm):
                 WHERE YEAR(f.date) = YEAR(NOW())
                 GROUP BY f.product_id;
 
+    Question: Who are the actors in the latest version of "K.G.F"?
+    SQL Query: SELECT a.name 
+                FROM actors a 
+                JOIN movie_actor ma ON a.actor_id = ma.actor_id 
+                JOIN movies m ON ma.movie_id = m.movie_id 
+                WHERE m.title LIKE 'K.G.F Chapter%' 
+                ORDER BY m.release_year DESC
+                LIMIT 1;
+
+    Question: Question: In how many movies did Sanjay Dutt act, and which film gained the most revenue? Finally, put all the results in top order wise.
+    SQL Squery: WITH SanjayDuttMovies AS (
+                SELECT m.title, COUNT(*) AS movie_count
+                FROM movies m
+                JOIN movie_actor ma ON m.movie_id = ma.movie_id
+                JOIN actors a ON ma.actor_id = a.actor_id
+                WHERE a.name = 'Sanjay Dutt'
+                GROUP BY m.title
+                ),
+                MovieRevenue AS (
+                    SELECT m.title, SUM(sales.revenue) AS total_revenue
+                    FROM movies m
+                    JOIN sales ON m.movie_id = sales.movie_id
+                    GROUP BY m.title
+                )
+                SELECT SDM.title AS movie_title, SDM.movie_count, MR.total_revenue
+                FROM SanjayDuttMovies SDM
+                LEFT JOIN MovieRevenue MR ON SDM.title = MR.title
+                ORDER BY MR.total_revenue DESC, SDM.movie_count DESC, SDM.title;
+            
+
     Your turn:
     
     Question: {question}
