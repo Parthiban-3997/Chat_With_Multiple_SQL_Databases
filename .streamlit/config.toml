@@ -1,0 +1,5 @@
+Host = "0.tcp.eu.ngrok.io"
+Port = "15550"
+User = "root"
+Password = "mysql"
+Databases = "chinook"
