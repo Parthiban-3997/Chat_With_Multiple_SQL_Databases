@@ -23,7 +23,7 @@ def update_secrets_file(data):
     secrets_data.update(data)
     
     # Write updated data back to secrets.toml
-    with open(secrets_file_path, "w+") as file:
+    with open(secrets_file_path, "rw+") as file:
         toml.dump(secrets_data, file)
 
 
