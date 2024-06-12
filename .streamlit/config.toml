@@ -1,41 +1,13 @@
-[12]
-Host = "localhost"
-Port = "3306"
-User = "root"
-Password = "mysql"
-Databases = "atliq_tshirts"
-
-[13]
-Host = "localhost"
-Port = "3306"
-User = "root"
-Password = "mysql"
-Databases = "moviesdb"
-
-[14]
-Host = "localhost"
-Port = "3306"
-User = "root"
-Password = "mysql"
-Databases = "moviesdb"
-
-[1]
-Host = "localhost"
-Port = "3306"
-User = "root"
-Password = "mysql"
-Databases = "moviesdb"
-
-[2223222]
-Host = "localhost"
-Port = "3306"
-User = "root"
-Password = "mysql"
-Databases = "moviesdb"
-
 [7875]
 Host = "6.tcp.eu.ngrok.io"
 Port = "12485"
 User = "root"
 Password = "mysql"
-Databases = "moviesdb"
+Databases = "atliq_tshirts"
+
+[231]
+Host = "localhost"
+Port = "3306"
+User = "root"
+Password = "mysql"
+Databases = "atliq_tshirts"
