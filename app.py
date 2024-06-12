@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import toml
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
@@ -7,41 +8,46 @@ from langchain_community.utilities import SQLDatabase
 from langchain_core.output_parsers import StrOutputParser
 from langchain_openai import ChatOpenAI
 from langchain_groq import ChatGroq
-import toml
 
 # Function to update config.toml file
-def update_secrets_file(data):
+def update_secrets_file(user, data):
     secrets_file_path = ".streamlit/config.toml"
     secrets_data = {}
-    
-    # Load existing data from secrets.toml
+
+    # Load existing data from config.toml
     if os.path.exists(secrets_file_path):
-        with open(secrets_file_path, "r") as file:
-            secrets_data = toml.load(file)
+        try:
+            with open(secrets_file_path, "r") as file:
+                secrets_data = toml.load(file)
+        except toml.TomlDecodeError:
+            secrets_data = {}
+
+    # Update user-specific secrets data
+    if user not in secrets_data:
+        secrets_data[user] = {}
     
-    # Update secrets data with new data
-    secrets_data.update(data)
+    secrets_data[user].update(data)
     
-    # Write updated data back to secrets.toml
-    with open(secrets_file_path, "a") as file:
+    # Write updated data back to config.toml
+    with open(secrets_file_path, "w") as file:
         toml.dump(secrets_data, file)
 
 
 # Initialize database connections
-def init_databases():
+def init_databases(user):
     secrets_file_path = ".streamlit/config.toml"
     secrets_data = {}
     if os.path.exists(secrets_file_path):
         with open(secrets_file_path, "r") as file:
-            content = file.read().strip()
-            if content:
-                secrets_data = toml.loads(content)
+            secrets_data = toml.load(file)
+    
+    user_data = secrets_data.get(user, {})
     
     db_connections = {}
-    for database in secrets_data.get("Databases", "").split(','):
+    for database in user_data.get("Databases", "").split(','):
         database = database.strip()
         if database:
-            db_uri = f"mysql+mysqlconnector://{secrets_data['User']}:{secrets_data['Password']}@{secrets_data['Host']}:{secrets_data['Port']}/{database}"
+            db_uri = f"mysql+mysqlconnector://{user_data['User']}:{user_data['Password']}@{user_data['Host']}:{user_data['Port']}/{database}"
             db_connections[database] = SQLDatabase.from_uri(db_uri)
     return db_connections
 
@@ -113,7 +119,27 @@ def get_sql_chain(dbs, llm):
     
     Question: How many shirts are available in stock grouped by colours from each size and finally show me all brands?
     SQL Query: SELECT brand, color, size, SUM(stock_quantity) AS total_stock FROM t_shirts GROUP BY brand, color, size
+ 
+    Question: select all the movies with minimum and maximum release_year. Note that there can be more than one movies in min and max year hence output rows can be more than 2?
+    SQL Query: select * from movies where release_year in (
+               (select min(release_year) from movies),
+		       (select max(release_year) from movies));
 
+    Question: Generate a yearly report for Croma India where there are two columns 1. Fiscal Year and 2. Total Gross Sales amount In that year from Croma
+    SQL Query: select
+                get_fiscal_year(date) as fiscal_year,
+                sum(round(sold_quantity*g.gross_price,2)) as yearly_sales
+                from fact_sales_monthly s
+                join fact_gross_price g
+                on 
+                    g.fiscal_year=get_fiscal_year(s.date) and
+                    g.product_code=s.product_code
+                where
+                    customer_code=90002002
+                group by get_fiscal_year(date)
+                order by fiscal_year;            
+    
+    
     Your turn:
     
     Question: {question}
@@ -189,6 +215,7 @@ with st.sidebar:
     st.write("This is a simple chat application using MySQL. Connect to the database and start chatting.")
     
     if "db" not in st.session_state:
+        st.session_state.user_id = st.text_input("User ID")
         st.session_state.Host = st.text_input("Host")
         st.session_state.Port = st.text_input("Port")
         st.session_state.User = st.text_input("User")
@@ -204,8 +231,8 @@ with st.sidebar:
         if st.button("Connect"):
             with st.spinner("Connecting to databases..."):
 
-                # Update secrets.toml with connection details
-                update_secrets_file({
+                # Update config.toml with user-specific connection details
+                update_secrets_file(st.session_state.user_id, {
                     "Host": st.session_state.Host,
                     "Port": st.session_state.Port,
                     "User": st.session_state.User,
@@ -213,7 +240,7 @@ with st.sidebar:
                     "Databases": st.session_state.Databases
                 })
 
-                dbs = init_databases()
+                dbs = init_databases(st.session_state.user_id)
                 st.session_state.dbs = dbs
 
                 if len(dbs) > 1:

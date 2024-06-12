@@ -1,1 +1,27 @@
+[12]
+Host = "localhost"
+Port = "3306"
+User = "root"
+Password = "mysql"
+Databases = "atliq_tshirts"
 
+[13]
+Host = "localhost"
+Port = "3306"
+User = "root"
+Password = "mysql"
+Databases = "moviesdb"
+
+[14]
+Host = "localhost"
+Port = "3306"
+User = "root"
+Password = "mysql"
+Databases = "moviesdb"
+
+[1]
+Host = "localhost"
+Port = "3306"
+User = "root"
+Password = "mysql"
+Databases = "moviesdb"
