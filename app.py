@@ -88,7 +88,7 @@ def get_sql_chain(dbs, llm):
                FROM t_shirts t
                LEFT JOIN discounts ON t.t_shirt_id = discounts.t_shirt_id
                GROUP BY brand, COALESCE(discounts.pct_discount, 0);
-               
+
     Question: Find the top 3 most popular colors for each brand, based on the total stock quantity.
     SQL Query: SELECT brand, color, SUM(stock_quantity) AS total_stock
                FROM t_shirts
@@ -256,7 +256,7 @@ with st.sidebar:
     st.write("This is a simple chat application using MySQL. Connect to the database and start chatting.")
     
     if "db" not in st.session_state:
-        st.session_state.user_id = st.text_input("User ID")
+        st.session_state.user_id = st.text_input("User ID",placeholder="Enter any random numbers")
         st.session_state.Host = st.text_input("Host")
         st.session_state.Port = st.text_input("Port")
         st.session_state.User = st.text_input("User")
