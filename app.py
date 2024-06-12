@@ -76,6 +76,9 @@ def get_sql_chain(dbs, llm):
     Question: Name 10 artists
     SQL Query: SELECT Name FROM Artist LIMIT 10;
 
+    Question: How many Van huesen black medium t shirts are available in stock?
+    SQL Query: SELECT SUM(stock_quantity) FROM t_shirts WHERE brand = 'Van Huesen' AND color = 'Black' AND size = 'M';
+
     Question: How much is the price of the inventory for all small size t-shirts?
     SQL Query: SELECT SUM(price * stock_quantity) FROM t_shirts WHERE size = 'S';
 
