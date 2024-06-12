@@ -12,29 +12,36 @@ import toml
 # Function to update secrets.toml file
 def update_secrets_file(data):
     secrets_file_path = ".streamlit/secrets.toml"
+    secrets_data = {}
     if os.path.exists(secrets_file_path):
         with open(secrets_file_path, "r") as file:
-            secrets_data = toml.load(file)
-    else:
-        secrets_data = {}
-
+            content = file.read().strip()
+            if content:
+                secrets_data = toml.loads(content)
+    
     secrets_data.update(data)
-
+    
     with open(secrets_file_path, "w") as file:
         toml.dump(secrets_data, file)
 
 # Initialize database connections
 def init_databases():
     secrets_file_path = ".streamlit/secrets.toml"
-    with open(secrets_file_path, "r") as file:
-        secrets_data = toml.load(file)
-        
+    secrets_data = {}
+    if os.path.exists(secrets_file_path):
+        with open(secrets_file_path, "r") as file:
+            content = file.read().strip()
+            if content:
+                secrets_data = toml.loads(content)
+    
     db_connections = {}
-    for database in secrets_data["Databases"].split(','):
+    for database in secrets_data.get("Databases", "").split(','):
         database = database.strip()
-        db_uri = f"mysql+mysqlconnector://{secrets_data['User']}:{secrets_data['Password']}@{secrets_data['Host']}:{secrets_data['Port']}/{database}"
-        db_connections[database] = SQLDatabase.from_uri(db_uri)
+        if database:
+            db_uri = f"mysql+mysqlconnector://{secrets_data['User']}:{secrets_data['Password']}@{secrets_data['Host']}:{secrets_data['Port']}/{database}"
+            db_connections[database] = SQLDatabase.from_uri(db_uri)
     return db_connections
+
 
 # Function to get SQL chain
 def get_sql_chain(dbs, llm):
@@ -179,13 +186,13 @@ with st.sidebar:
     st.write("This is a simple chat application using MySQL. Connect to the database and start chatting.")
     
     if "db" not in st.session_state:
-        st.session_state.Host = st.text_input("Host", value=st.secrets.get("Host", ""))
-        st.session_state.Port = st.text_input("Port", value=st.secrets.get("Port", ""))
-        st.session_state.User = st.text_input("User", value=st.secrets.get("User", ""))
-        st.session_state.Password = st.text_input("Password", type="password", value=st.secrets.get("Password", ""))
-        st.session_state.Databases = st.text_input("Databases", placeholder="Enter DB's separated by (,)", value=st.secrets.get("Databases", ""))
-        st.session_state.openai_api_key = st.text_input("OpenAI API Key", type="password", help="Get your API key from [OpenAI Website](https://platform.openai.com/api-keys)", value=st.secrets.get("openai_api_key", ""))
-        st.session_state.groq_api_key = st.text_input("Groq API Key", type="password", help="Get your API key from [GROQ Console](https://console.groq.com/keys)", value=st.secrets.get("groq_api_key", ""))
+        st.session_state.Host = st.text_input("Host")
+        st.session_state.Port = st.text_input("Port")
+        st.session_state.User = st.text_input("User")
+        st.session_state.Password = st.text_input("Password", type="password")
+        st.session_state.Databases = st.text_input("Databases", placeholder="Enter DB's separated by (,)")
+        st.session_state.openai_api_key = st.text_input("OpenAI API Key", type="password", help="Get your API key from [OpenAI Website](https://platform.openai.com/api-keys)")
+        st.session_state.groq_api_key = st.text_input("Groq API Key", type="password", help="Get your API key from [GROQ Console](https://console.groq.com/keys)")
 
         st.info("Note: For interacting multiple databases, GPT-4 Model is recommended for accurate results else proceed with Groq Model")
         
