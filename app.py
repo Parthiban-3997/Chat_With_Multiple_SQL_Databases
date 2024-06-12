@@ -69,21 +69,26 @@ def get_sql_chain(dbs, llm):
     For example:
     Question: which 3 artists have the most tracks?
     SQL Query: SELECT ArtistId, COUNT(*) as track_count FROM Track GROUP BY ArtistId ORDER BY track_count DESC LIMIT 3;
+
     Question: Name 10 artists
     SQL Query: SELECT Name FROM Artist LIMIT 10;
+
     Question: How much is the price of the inventory for all small size t-shirts?
     SQL Query: SELECT SUM(price * stock_quantity) FROM t_shirts WHERE size = 'S';
+
     Question: If we have to sell all the Levi's T-shirts today with discounts applied. How much revenue our store will generate (post discounts)?
     SQL Query: SELECT SUM(a.total_amount * ((100 - COALESCE(discounts.pct_discount, 0)) / 100)) AS total_revenue 
                FROM (SELECT SUM(price * stock_quantity) AS total_amount, t_shirt_id 
                FROM t_shirts 
                WHERE brand = 'Levi' GROUP BY t_shirt_id) a   
                LEFT JOIN discounts ON a.t_shirt_id = discounts.t_shirt_id;
+
     Question: For each brand, find the total revenue generated from t-shirts with a discount applied, grouped by the discount percentage.
     SQL Query: SELECT brand, COALESCE(discounts.pct_discount, 0) AS discount_pct, SUM(t.price * t.stock_quantity * (1 - COALESCE(discounts.pct_discount, 0) / 100)) AS total_revenue
                FROM t_shirts t
                LEFT JOIN discounts ON t.t_shirt_id = discounts.t_shirt_id
                GROUP BY brand, COALESCE(discounts.pct_discount, 0);
+               
     Question: Find the top 3 most popular colors for each brand, based on the total stock quantity.
     SQL Query: SELECT brand, color, SUM(stock_quantity) AS total_stock
                FROM t_shirts
@@ -139,7 +144,43 @@ def get_sql_chain(dbs, llm):
                 group by get_fiscal_year(date)
                 order by fiscal_year;            
     
-    
+    Question: What is the total freight cost incurred by each customer in the month of May 2024?
+    SQL Query: SELECT s.customer_name, SUM(f.freight_cost) AS total_freight_cost
+               FROM gdb0041.sales_monthly s
+               JOIN gdb056.freight_cost f ON s.customer_id = f.customer_id
+               WHERE s.month = 'May 2024'
+               GROUP BY s.customer_id;
+
+    Question: Question: Which market has the highest gross price sales in the last quarter?
+    SQL Query:  SELECT s.market, SUM(g.gross_price) AS total_gross_price
+                FROM gdb041.sales_monthly s
+                JOIN gdb056.gross_price g ON s.market_id = g.market_id
+                WHERE s.quarter = 'Q2 2024'
+                GROUP BY s.market_id
+                ORDER BY total_gross_price DESC
+                LIMIT 1;
+
+    Question: What is the manufacturing cost of products sold in each region last year?  
+    SQL Query: SELECT s.region, SUM(m.manufacturing_cost) AS total_manufacturing_cost
+                FROM gdb0041.sales_monthly s
+                JOIN gdb056.manufacturing_cost m ON s.product_id = m.product_id
+                WHERE s.year = 2023
+                GROUP BY s.region;         
+          
+    Question: How many pre-invoice deductions were applied to each customer's sales in the last six months?
+    SQL Query: SELECT s.customer_name, COUNT(p.pre_invoice_deduction_id) AS total_pre_invoice_deductions
+                FROM gdb041.sales_monthly s
+                JOIN gdb056.pre_invoice_deductions p ON s.sales_id = p.sales_id
+                WHERE s.date BETWEEN DATE_SUB(NOW(), INTERVAL 6 MONTH) AND NOW()
+                GROUP BY s.customer_id;
+
+    Question: What are the post-invoice deductions for each product in the current year?
+    SQL Query: SELECT f.product_name, SUM(p.amount) AS total_post_invoice_deductions
+                FROM gdb0041.forecast_monthly f
+                JOIN gdb056.post_invoice_deductions p ON f.product_id = p.product_id
+                WHERE YEAR(f.date) = YEAR(NOW())
+                GROUP BY f.product_id;
+
     Your turn:
     
     Question: {question}
