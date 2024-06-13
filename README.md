@@ -34,7 +34,8 @@ Furthermore, the application's ability to connect to multiple databases simultan
 
 Consider the following diagram to understand how the different chains and components are built:
 
-![Chatbot Architecture](./docs/mysql-chains.png)
+![Chatbot Architecture](https://github.com/Parthiban-R-3997/Chat_With_Multiple_SQL_Databases/assets/26496805/d833ca1e-a51d-47b6-a074-6703dd957525)
+
 
 ## Getting Started
 
