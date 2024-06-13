@@ -5,7 +5,7 @@ This project is a Streamlit application that allows users to interact with multi
 
 ## Deployed Link
 
-Document Q&A app is Deployed And Available [Here](https://huggingface.co/spaces/Parthiban97/Chat_With_Multiple_Data_Sources)
+Document Q&A app is Deployed And Available [Here](https://chatwithmultiplesqldatabases.streamlit.app/)
 
 
 ## Screenshots
