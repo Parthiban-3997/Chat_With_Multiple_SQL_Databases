@@ -15,8 +15,7 @@ Document Q&A app is Deployed And Available [Here](https://chatwithmultiplesqldat
 ![db_3](https://github.com/Parthiban-R-3997/Chat_With_Multiple_Data_Sources/assets/26496805/d1e18b55-ffa7-4cf8-a60b-c000ef816f0a)
 ![db_4](https://github.com/Parthiban-R-3997/Chat_With_Multiple_Data_Sources/assets/26496805/d8fdecef-0d0b-424f-936f-8e7ad3a80743)
 ![db_5](https://github.com/Parthiban-R-3997/Chat_With_Multiple_Data_Sources/assets/26496805/108f2f5b-b2ed-48b9-b892-74bbc8cef64d)
-![db_6](https://github.com/Parthiban-R-3997/Chat_With_Multiple_Data_Sources/assets/26496805/912f285d-6ad6-49a0-8b2d-f6180c90ee2e)
-![db_7](https://github.com/Parthiban-R-3997/Chat_With_Multiple_Data_Sources/assets/26496805/741b27f6-5ef6-49c0-866b-97831e1b3824)
+![db_6](https://github.com/Parthiban-R-3997/Chat_With_Multiple_Data_Sources/assets/26496805/741b27f6-5ef6-49c0-866b-97831e1b3824)
 
 ## Key Features
 
