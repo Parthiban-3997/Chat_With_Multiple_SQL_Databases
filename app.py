@@ -26,11 +26,8 @@ def update_secrets_file(user, data):
             secrets_data = {}
 
     # Update user-specific secrets data
-    if user not in secrets_data:
-        secrets_data[user] = {}
-    
-    secrets_data[user].update(data)
-    
+    secrets_data[user] = data
+
     # Write updated data back to config.toml
     with open(secrets_file_path, "w") as file:
         toml.dump(secrets_data, file)

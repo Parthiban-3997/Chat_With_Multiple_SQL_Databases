@@ -1,6 +1,0 @@
-[24]
-Host = "4.tcp.eu.ngrok.io"
-Port = "18473"
-User = "root"
-Password = "mysql"
-Databases = "moviesdb"
