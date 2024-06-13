@@ -7,4 +7,5 @@ mysql-connector-python
 groq
 langchain-groq
 toml
+sqlalchemy
 

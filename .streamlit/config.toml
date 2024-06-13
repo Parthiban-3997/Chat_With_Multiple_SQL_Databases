@@ -1,13 +1,6 @@
-[7875]
-Host = "6.tcp.eu.ngrok.io"
-Port = "12485"
+[45]
+Host = "4.tcp.eu.ngrok.io"
+Port = "18473"
 User = "root"
 Password = "mysql"
-Databases = "atliq_tshirts"
-
-[231]
-Host = "localhost"
-Port = "3306"
-User = "root"
-Password = "mysql"
-Databases = "atliq_tshirts"
+Databases = "moviesdb"

@@ -9,6 +9,8 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_openai import ChatOpenAI
 from langchain_groq import ChatGroq
 
+
+
 # Function to update config.toml file
 def update_secrets_file(user, data):
     secrets_file_path = ".streamlit/config.toml"
@@ -66,8 +68,7 @@ def get_sql_chain(dbs, llm):
     Write the SQL queries for each relevant database, prefixed by the database name (e.g., DB1: SELECT * FROM ...; DB2: SELECT * FROM ...).
     Do not wrap the SQL queries in any other text, not even backticks.
     
-    Also if a movie names like 'K.G.F: Chapter 1','K.G.F: Chapter 2' is present and whenever a user ask like 'kgf' or 'KgF' or 'kgf latest version' it should understand that it refers to 'K.G.F: Chapter 2 or K.G.F: Chapter 1 accordingly
-    
+
     For example:
 
     Question: Which 3 artists have the most tracks?
@@ -75,6 +76,15 @@ def get_sql_chain(dbs, llm):
 
     Question: Name 10 artists
     SQL Query: SELECT Name FROM Artist LIMIT 10;
+
+    Question:can you show SRK( a.k.a Shah Rukh Khan) movies where the imdb rating is greater than average rating of all movies and also show which movie had highest revenue in millions (INR)
+    SQL Query:  SELECT m.title, m.imdb_rating, f.revenue 
+                FROM movies m 
+                JOIN financials f ON m.movie_id = f.movie_id 
+                JOIN movie_actor ma ON m.movie_id = ma.movie_id 
+                JOIN actors a ON ma.actor_id = a.actor_id 
+                WHERE a.name = 'Shah Rukh Khan' AND m.imdb_rating > (SELECT AVG(imdb_rating) FROM movies) 
+                ORDER BY f.revenue DESC;
 
     Question: How many Van huesen black medium t shirts are available in stock?
     SQL Query: SELECT SUM(stock_quantity) FROM t_shirts WHERE brand = 'Van Huesen' AND color = 'Black' AND size = 'M';
@@ -147,12 +157,31 @@ def get_sql_chain(dbs, llm):
         schemas = {db_name: db.get_table_info() for db_name, db in dbs.items()}
         return schemas
 
+    def parse_multi_line_queries(result):
+        queries = {}
+        lines = result.strip().split("\n")
+        current_db = None
+        current_query = []
+
+        for line in lines:
+            if ":" in line and not current_db:  # Only split on colon for the database name
+                current_db, query_start = line.split(":", 1)
+                current_db = current_db.strip()
+                current_query.append(query_start.strip())
+            else:
+                current_query.append(line.strip())
+
+        if current_db:
+            queries[current_db] = " ".join(current_query).strip()
+
+        return queries
+    
     return (
         RunnablePassthrough.assign(schemas=get_schema)
         | prompt
         | llm
         | StrOutputParser()
-        | (lambda result: {line.split(":")[0]: line.split(":")[1].strip() for line in result.strip().split("\n") if ":" in line and line.strip()})
+        | parse_multi_line_queries
     )
 
 # Function to get response
@@ -208,16 +237,14 @@ st.title("Chat with MySQL")
 
 # Define model options
 model_options_groq = [
-    "llama3-8b-8192",
     "llama3-70b-8192",
-    "mixtral-8x7b-32768",
-    "gemma-7b-it"
+    "llama3-8b-8192",
+    "mixtral-8x7b-32768"
 ]
 
 model_options_openai = [
     "gpt-4o",
     "gpt-4-turbo",
-    "gpt-4-turbo-preview",
     "gpt-3.5-turbo-0125"
 ]
 
@@ -238,7 +265,9 @@ with st.sidebar:
         selected_model_groq = st.selectbox("Select any Groq Model", model_options_groq)
         st.info("Note: For interacting multiple databases and dealing with complex queries, GPT-4 Model is recommended for accurate results else proceed with Groq Model")
         
+       
         os.environ["OPENAI_API_KEY"] = str(st.session_state.openai_api_key)
+       
 
         if st.button("Connect"):
             with st.spinner("Connecting to databases..."):
@@ -267,7 +296,7 @@ with st.sidebar:
         elif st.session_state.openai_api_key:    
             st.session_state.llm = ChatOpenAI(model=selected_model_openai, api_key=st.session_state.openai_api_key)
         elif st.session_state.groq_api_key:
-            st.session_state.llm = ChatGroq(model_name=selected_model_groq, temperature=0, api_key=st.session_state.groq_api_key)
+            st.session_state.llm = ChatGroq(model_name=selected_model_groq, temperature=0.5, api_key=st.session_state.groq_api_key)
         else:
             pass
 
