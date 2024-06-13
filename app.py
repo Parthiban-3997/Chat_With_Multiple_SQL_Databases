@@ -8,9 +8,9 @@ from langchain_community.utilities import SQLDatabase
 from langchain_core.output_parsers import StrOutputParser
 from langchain_openai import ChatOpenAI
 from langchain_groq import ChatGroq
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 
-load_dotenv() 
+#load_dotenv() 
 
 # Function to update config.toml file
 def update_secrets_file(user, data):
