@@ -237,13 +237,17 @@ st.title("Chat with MySQL")
 
 # Define model options
 model_options_groq = [
+    "llama-3.1-70b-versatile",
+    "llama-3.1-8b-instant",
     "llama3-70b-8192",
     "llama3-8b-8192",
     "mixtral-8x7b-32768"
+    "gemma2-9b-it"
 ]
 
 model_options_openai = [
     "gpt-4o",
+    "gpt-4o-mini",
     "gpt-4-turbo",
     "gpt-3.5-turbo-0125"
 ]
