@@ -5,7 +5,7 @@ This project is a Streamlit application that allows users to interact with multi
 
 ## Deployed Link
 
-Document Q&A app is Deployed And Available [Here](https://chatwithmultiplesqldatabases.streamlit.app/)
+Document Q&A app is Deployed And Available [Here](https://chatwithmultiplesqldatabase.streamlit.app/)
 
 
 ## Screenshots
